@@ -9,7 +9,13 @@ namespace Telnyx;
  */
 class Telnyx
 {
-    // @var string The Telnyx API key to be used for requests.
+    // @var string The Telnyx API Access key to be used for V1 API requests.
+    public static $apiAccessKey;
+
+    // @var string The Telnyx API Token to be used for V1 API requests.
+    public static $apiToken;
+
+    // @var string The Telnyx API key to be used for V2 API requests.
     public static $apiKey;
 
     // @var string The Telnyx client_id to be used for Connect requests.
@@ -53,7 +59,23 @@ class Telnyx
     const VERSION = '0.0.1';
 
     /**
-     * @return string The API key used for requests.
+     * @return string The API access key used for V1 requests.
+     */
+    public static function getApiAccessKey()
+    {
+        return self::$apiAccessKey;
+    }
+
+    /**
+     * @return string The API Token used for V1 requests.
+     */
+    public static function getApiToken()
+    {
+        return self::$apiToken;
+    }
+
+    /**
+     * @return string The API key used for V2 requests.
      */
     public static function getApiKey()
     {
@@ -90,7 +112,27 @@ class Telnyx
     }
 
     /**
-     * Sets the API key to be used for requests.
+     * Sets the API access key to be used for V1 requests.
+     *
+     * @param string $apiAccessKey
+     */
+    public static function setApiAccessKey($apiAccessKey)
+    {
+        self::$apiAccessKey = $apiAccessKey;
+    }
+    
+    /**
+     * Sets the API token to be used for V1 requests.
+     *
+     * @param string $apiToken
+     */
+    public static function setApiToken($apiToken)
+    {
+        self::$apiToken = $apiToken;
+    }
+
+    /**
+     * Sets the API key to be used for V2 requests.
      *
      * @param string $apiKey
      */
