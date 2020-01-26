@@ -15,7 +15,10 @@ class RequestOptions
     ];
 
     public $headers;
+    public $apiAccessKey;
+    public $apiToken;
     public $apiKey;
+
     public $apiBase;
 
     public function __construct($key = null, $headers = [], $base = null)
