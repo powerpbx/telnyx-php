@@ -37,7 +37,11 @@ Composer will handle these dependencies. If you install manually, you'll want to
 
 Getting Started
 ---------------
-
+For added accesskey and token to WHMCS.  In server config Access Hash field add the following
+```
+<accesskey>YOUR_V1_API_ACCESS_KEY</accesskey>
+<token>YOUR_V1_API_TOKEN</token>
+```
 Basic example:
 
 ```php
