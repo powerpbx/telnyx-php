@@ -35,7 +35,7 @@ class ApiRequestorV1
     private static $requestTelemetry;
 
     /**
-     * ApiRequestor constructor.
+     * ApiRequestorV1 constructor.
      *
      * @param string|null $apiKey
      * @param string|null $apiBase
@@ -77,13 +77,13 @@ class ApiRequestorV1
     /**
      * @static
      *
-     * @param ApiResource|bool|array|mixed $d
+     * @param ApiResourceV1|bool|array|mixed $d
      *
-     * @return ApiResource|array|string|mixed
+     * @return ApiResourceV1|array|string|mixed
      */
     private static function _encodeObjects($d)
     {
-        if ($d instanceof ApiResource) {
+        if ($d instanceof ApiResourceV1) {
             return Util\Util::utf8($d->id);
         } elseif ($d === true) {
             return 'true';
@@ -121,11 +121,11 @@ class ApiRequestorV1
     {
         $params = $params ?: [];
         $headers = $headers ?: [];
-        list($rbody, $rcode, $rheaders, $myApiKey) =
+        list($rbody, $rcode, $rheaders, $myApiAccessKey, $myToken) =
         $this->_requestRaw($method, $url, $params, $headers);
         $json = $this->_interpretResponse($rbody, $rcode, $rheaders);
-        $resp = new ApiResponseV1($rbody, $rcode, $rheaders, $json);
-        return [$resp, $myApiKey];
+        $resp = new ApiResponse($rbody, $rcode, $rheaders, $json);
+        return [$resp, $myApiAccessKey, $myToken];
     }
 
     /**
@@ -241,7 +241,8 @@ class ApiRequestorV1
     /**
      * @static
      *
-     * @param string $apiKey
+     * @param string $apiAccessKey
+     * @param string $apiToken
      * @param null   $clientInfo
      *
      * @return array
@@ -291,15 +292,29 @@ class ApiRequestorV1
      */
     private function _requestRaw($method, $url, $params, $headers)
     {
-        $myApiKey = $this->_apiKey;
-        if (!$myApiKey) {
-            $myApiKey = Telnyx::$apiKey;
+        $myApiAccessKey = $this->_apiAccessKey;
+        $myApiToken = $this->_apiToken;
+
+        if (!$myApiAccessKey) {
+            $myApiAccessKey = Telnyx::$apiAccessKey;
+        }
+        if (!$myApiToken) {
+            $myApiToken = Telnyx::$apiToken;
         }
 
-        if (!$myApiKey) {
-            $msg = 'No API key provided.  (HINT: set your API key using '
-              . '"Telnyx::setApiKey(<API-KEY>)".  You can generate API keys from '
-              . 'the Telnyx web interface.  See https://developers.telnyx.com/docs/v2/development/authentication '
+
+        if (!$myApiAccessKey) {
+            $msg = 'No API access key provided.  (HINT: set your API access key using '
+              . '"Telnyx::setApiAccessKey(<API-ACCESS-KEY>)".  You can generate API keys from '
+              . 'the Telnyx web interface.  See https://developers.telnyx.com/docs/v1/development/authentication '
+              . 'for details, or email support@telnyx.com if you have any questions.';
+            throw new Error\Authentication($msg);
+        }
+
+        if (!$myApiToken) {
+            $msg = 'No API token provided.  (HINT: set your API token using '
+              . '"Telnyx::setApiToken(<API-TOKEN>)".  Your API token can be found in '
+              . 'the Telnyx web interface.  See https://developers.telnyx.com/docs/api/v1/overview#authentication '
               . 'for details, or email support@telnyx.com if you have any questions.';
             throw new Error\Authentication($msg);
         }
@@ -314,7 +329,8 @@ class ApiRequestorV1
 
         $absUrl = $this->_apiBase.$url;
         $params = self::_encodeObjects($params);
-        $defaultHeaders = $this->_defaultHeaders($myApiKey, $clientUAInfo);
+        $defaultHeaders = $this->_defaultHeaders($myApiAccessKey, $myApiToken, $clientUAInfo);
+
         if (Telnyx::$apiVersion) {
             $defaultHeaders['Telnyx-Version'] = Telnyx::$apiVersion;
         }
@@ -367,8 +383,7 @@ class ApiRequestorV1
                 Util\Util::currentTimeMillis() - $requestStartMs
             );
         }
-
-        return [$rbody, $rcode, $rheaders, $myApiKey];
+        return [$rbody, $rcode, $rheaders, $myApiAccessKey, $myApiToken];
     }
 
     /**

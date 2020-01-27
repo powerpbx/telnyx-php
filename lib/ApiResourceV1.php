@@ -3,7 +3,7 @@
 namespace Telnyx;
 
 /**
- * Class ApiResource
+ * Class ApiResourceV1
  *
  * @package Telnyx
  */
@@ -41,18 +41,18 @@ abstract class ApiResourceV1 extends TelnyxObject
         parent::__set($k, $v);
         $v = $this->$k;
         if ((static::getSavedNestedResources()->includes($k)) &&
-            ($v instanceof ApiResource)) {
+            ($v instanceof ApiResourceV1)) {
             $v->saveWithParent = true;
         }
         return $v;
     }
 
     /**
-     * @return ApiResource The refreshed resource.
+     * @return ApiResourceV1 The refreshed resource.
      */
     public function refresh()
     {
-        $requestor = new ApiRequestor($this->_opts->apiKey, static::baseUrl());
+        $requestor = new ApiRequestorV1($this->_opts->apiKey, static::baseUrl());
         $url = $this->instanceUrl();
 
         list($response, $this->_opts->apiKey) = $requestor->request(

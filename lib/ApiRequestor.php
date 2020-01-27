@@ -345,7 +345,6 @@ class ApiRequestor
         }
 
         $requestStartMs = Util\Util::currentTimeMillis();
-
         list($rbody, $rcode, $rheaders) = $this->httpClient()->request(
             $method,
             $absUrl,
@@ -360,7 +359,6 @@ class ApiRequestor
                 Util\Util::currentTimeMillis() - $requestStartMs
             );
         }
-
         return [$rbody, $rcode, $rheaders, $myApiKey];
     }
 

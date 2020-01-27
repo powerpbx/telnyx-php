@@ -53,8 +53,16 @@ trait Request
     {
         $opts = \Telnyx\Util\RequestOptions::parse($options);
         $baseUrl = isset($opts->apiBase) ? $opts->apiBase : static::baseUrl();
-        $requestor = new \Telnyx\ApiRequestor($opts->apiKey, $baseUrl);
-        list($response, $opts->apiKey) = $requestor->request($method, $url, $params, $opts->headers);
+
+        //Test for Class with V1 appended at the end of the name.  If V1 API.
+        $testV1 = substr(get_called_class(), -2);
+        if ($testV1 == 'V1') {
+            $requestor = new \Telnyx\ApiRequestorV1($opts->apiAccessKey, $opts->apiToken, $baseUrl);
+            list($response, $opts->apiAccessKey, $opts->apiToken) = $requestor->request($method, $url, $params, $opts->headers);
+        } else {
+            $requestor = new \Telnyx\ApiRequestor($opts->apiKey, $baseUrl);
+            list($response, $opts->apiKey) = $requestor->request($method, $url, $params, $opts->headers);
+        }
         $opts->discardNonPersistentHeaders();
         return [$response, $opts];
     }

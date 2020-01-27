@@ -10,7 +10,7 @@ namespace Telnyx;
 class CdrRequestV1 extends ApiResourceV1
 {
 
-    const OBJECT_NAME = "cdr_requests";
+    const OBJECT_NAME = "reporting/cdr_request";
 
     use ApiOperations\All;
     use ApiOperations\Create;
